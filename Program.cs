@@ -53,7 +53,7 @@ namespace demineur_madrazo
 
             //Affichage du tableau
             Grid(nRow, nColumn);
-            Game();
+            Game(nRow, nColumn);
 
 
         }
@@ -247,10 +247,12 @@ namespace demineur_madrazo
             }
             
         }
-        static void Game()
+        static void Game(int nRow, int nColumn)
         {
             bool finishOrNot = false;
             bool winOrNot = false;
+            int col;
+            int row
 
             while (!finishOrNot)
             {
@@ -258,10 +260,7 @@ namespace demineur_madrazo
                 switch (touch.Key)
                 {
                     case ConsoleKey.RightArrow:
-                        if ()
-                        {
-                            Console.CursorLeft += 4;
-                        }
+                        Console.CursorLeft += 4
                         break;
 
                     case ConsoleKey.LeftArrow:
