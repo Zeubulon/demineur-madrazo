@@ -52,7 +52,8 @@ namespace demineur_madrazo
             Console.WriteLine(" mines se cachent dans le jeu !");
 
             //Affichage du tableau
-            Grid(nRow, nColumn);
+            int[,] grid = Grid(nRow, nColumn);
+            GridBackend(grid, nRow, nColumn, nbMine)
             Game(nRow, nColumn);
 
 
@@ -168,13 +169,13 @@ namespace demineur_madrazo
 
             return nMine;
         }
-        static void Grid(int nRow, int nColumn)
+        static int[,] Grid(int nRow, int nColumn)
         {
             int marginTop = 8;
             int marginLeft = 4;
             int n = nRow;
 
-            int[,] grid = [nRow, nColumn];
+            int[,] grid = new int[nRow, nColumn];
 
             LineGrid(nRow, "╔", "╦", "╗", marginTop, marginLeft, true);
 
@@ -219,6 +220,8 @@ namespace demineur_madrazo
             Console.WriteLine("- Que toutes les mines n'ont pas été explosées");
 
             Console.SetCursorPosition(6, 9);
+
+            return grid;
         }
         static void LineGrid(int nRow, string c1, string c2, string c3, int marginTop, int marginLeft, bool t)
         {
@@ -278,6 +281,7 @@ namespace demineur_madrazo
                         break;
 
                     case ConsoleKey.Enter:
+                        Console.Title=$"row {row} col {col}";
                         break;
 
                     case ConsoleKey.Escape:
@@ -296,6 +300,18 @@ namespace demineur_madrazo
                 int marginLeft = 6 + 4*col;
                 int marginTop = 9 + 2*row;
                 Console.SetCursorPosition(marginLeft, marginTop);
+            }
+        }
+        static void GridBackend(int grid, int nRow, int nColumn, int nbMine)
+        {
+            int[] mine;
+            Random mRandom = new Random();
+
+            while (nbMine > 0)
+            {
+                mine = new int[]
+
+                nbMine--;
             }
         }
     }
