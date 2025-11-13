@@ -54,18 +54,10 @@ namespace demineur_madrazo
             //Affichage du tableau
             int[,] grid = Grid(nRow, nColumn);
             grid = GridBackend(grid, nRow, nColumn, nbMine);
-            for (int i = 0; i < grid.GetLength(0); i++)        // lignes
-            {
-                for (int j = 0; j < grid.GetLength(1); j++)    // colonnes
-                {
-                    Console.Write(grid[i, j] + "\t");
-                }
-                Console.WriteLine(); // saut de ligne après chaque ligne
-            }
-            Console.Read();
 
-            //Game(nRow, nColumn);
+            Game(nRow, nColumn, grid);
 
+            Console.WriteLine("Finish");
 
         }
         /// <summary>
@@ -262,14 +254,14 @@ namespace demineur_madrazo
             }
             
         }
-        static void Game(int nb1, int nb2)
+        static void Game(int nb1, int nb2, int[,] nb3)
         {
-            bool finishOrNot = false;
+            bool finish = false;
             bool winOrNot = false;
             int col = 0;
             int row = 0;
 
-            while (!finishOrNot)
+            while (!finish)
             {
                 ConsoleKeyInfo touch = Console.ReadKey(true);
                 switch (touch.Key)
@@ -291,23 +283,43 @@ namespace demineur_madrazo
                         break;
 
                     case ConsoleKey.Enter:
-                        Console.Title=$"row {row} col {col}";
-                        break;
+                        if (nb3[row, col] == 1)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("X");
+                            Console.ResetColor();
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("O");
+                            Console.ResetColor();
+                        }
+                            break;
 
                     case ConsoleKey.Escape:
+                        finish = true;
                         break;
                 }
 
-                if (col == nb2 || col < 0)
+                if (col == nb2)
                 {
                     col = 0;
                 }
-                else if (row == nb1 || row < 0)
+                else if (row == nb1)
                 {
                     row = 0;
                 }
+                else if (col < 0)
+                {
+                    col = nb2 - 1;
+                }
+                else if (row < 0)
+                {
+                    row = nb1 - 1;
+                }
 
-                int marginLeft = 6 + 4*col;
+                int marginLeft = 6 + 4 * col;
                 int marginTop = 9 + 2*row;
                 Console.SetCursorPosition(marginLeft, marginTop);
             }
