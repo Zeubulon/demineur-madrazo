@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -174,6 +174,8 @@ namespace demineur_madrazo
             int marginLeft = 4;
             int n = nRow;
 
+            int[,] grid = [nRow, nColumn];
+
             LineGrid(nRow, "╔", "╦", "╗", marginTop, marginLeft, true);
 
             marginTop += 2;
@@ -247,12 +249,12 @@ namespace demineur_madrazo
             }
             
         }
-        static void Game(int nRow, int nColumn)
+        static void Game(int nb1, int nb2)
         {
             bool finishOrNot = false;
             bool winOrNot = false;
-            int col;
-            int row
+            int col = 0;
+            int row = 0;
 
             while (!finishOrNot)
             {
@@ -260,19 +262,19 @@ namespace demineur_madrazo
                 switch (touch.Key)
                 {
                     case ConsoleKey.RightArrow:
-                        Console.CursorLeft += 4
+                        col ++;
                         break;
 
                     case ConsoleKey.LeftArrow:
-                        Console.CursorLeft -= 4;
+                        col --;
                         break;
 
                     case ConsoleKey.UpArrow:
-                        Console.CursorTop -= 2;
+                        row --;
                         break;
 
                     case ConsoleKey.DownArrow:
-                        Console.CursorTop += 2;
+                        row ++;
                         break;
 
                     case ConsoleKey.Enter:
@@ -281,6 +283,19 @@ namespace demineur_madrazo
                     case ConsoleKey.Escape:
                         break;
                 }
+
+                if (col == nb2)
+                {
+                    col = 0;
+                }
+                else if (row == nb1)
+                {
+                    row = 0;
+                }
+
+                int marginLeft = 6 + 4*col;
+                int marginTop = 9 + 2*row;
+                Console.SetCursorPosition(marginLeft, marginTop);
             }
         }
     }
