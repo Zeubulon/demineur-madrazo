@@ -258,7 +258,10 @@ namespace demineur_madrazo
                 switch (touch.Key)
                 {
                     case ConsoleKey.RightArrow:
-                        Console.CursorLeft += 4;
+                        if ()
+                        {
+                            Console.CursorLeft += 4;
+                        }
                         break;
 
                     case ConsoleKey.LeftArrow:
