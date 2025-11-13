@@ -53,8 +53,18 @@ namespace demineur_madrazo
 
             //Affichage du tableau
             int[,] grid = Grid(nRow, nColumn);
-            GridBackend(grid, nRow, nColumn, nbMine)
-            Game(nRow, nColumn);
+            grid = GridBackend(grid, nRow, nColumn, nbMine);
+            for (int i = 0; i < grid.GetLength(0); i++)        // lignes
+            {
+                for (int j = 0; j < grid.GetLength(1); j++)    // colonnes
+                {
+                    Console.Write(grid[i, j] + "\t");
+                }
+                Console.WriteLine(); // saut de ligne après chaque ligne
+            }
+            Console.Read();
+
+            //Game(nRow, nColumn);
 
 
         }
@@ -288,11 +298,11 @@ namespace demineur_madrazo
                         break;
                 }
 
-                if (col == nb2)
+                if (col == nb2 || col < 0)
                 {
                     col = 0;
                 }
-                else if (row == nb1)
+                else if (row == nb1 || row < 0)
                 {
                     row = 0;
                 }
@@ -302,17 +312,29 @@ namespace demineur_madrazo
                 Console.SetCursorPosition(marginLeft, marginTop);
             }
         }
-        static void GridBackend(int grid, int nRow, int nColumn, int nbMine)
+        static int[,] GridBackend(int[,] grid, int nRow, int nColumn, int nbMine)
         {
-            int[] mine;
+            int mineRow;
+            int mineCol;
+
             Random mRandom = new Random();
 
             while (nbMine > 0)
             {
-                mine = new int[]
+                mineRow = mRandom.Next(nRow);
+                mineCol = mRandom.Next(nColumn);
+
+                while (grid[mineRow, mineCol] == 1)
+                {
+                    mineRow = mRandom.Next(nRow);
+                    mineCol = mRandom.Next(nColumn);
+                }
+
+                grid[mineRow, mineCol] = 1;
 
                 nbMine--;
             }
+            return grid;
         }
     }
 }
