@@ -100,7 +100,7 @@ namespace demineur_madrazo
             {
                 Console.Write($"Nombre de {w} : ");
                 valueOk = int.TryParse(Console.ReadLine(), out n);
-                if (n >= 6 && n <= 30)
+                if (n >= 1 && n <= 30)
                 {
                     rangeOk = true;
                 }
@@ -312,10 +312,13 @@ namespace demineur_madrazo
                             Console.SetCursorPosition(0, nb1 * 2 + 10);
                             Console.Write($"Il reste encore {remainingMine} mine(s) cachée(s)");
                         }
-                        else if (nb3[row, col] == 5)
+                        else if (nb3[row, col] == 5 || nb3[row, col] == 6)
                         {
                             Console.Write(" ");
-                            nb3[row, col] = 0;
+                            if (nb3[row, col] == 5)
+                                nb3[row, col] = 0;
+                            else
+                                nb3[row, col] = 1;
                         }
                         else
                         {
@@ -332,7 +335,14 @@ namespace demineur_madrazo
                             Console.Write("F");
                             nb3[row, col] = 5;
                         }
-                        break;
+                        else if (nb3[row, col] == 1)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.Write("F");
+                            Console.ResetColor();
+                            nb3[row, col] = 6;
+                        }
+                            break;
 
                     default:
                         break;
@@ -353,15 +363,19 @@ namespace demineur_madrazo
                                 emptyCount++;
                                 break;
 
+                            case 5:
+                                emptyCount++;
+                                break;
+
                             default:
                                 break;
                         }
                     }
                 }
 
-                if (touch.Key == ConsoleKey.Escape || mineCount == nbMine)
+                if (touch.Key == ConsoleKey.Escape || emptyCount == 0 || remainingMine == 0)
                 {
-                    if (emptyCount == 0)
+                    if (mineCount != nbMine)
                     {
                         isWon = true;
                     }
