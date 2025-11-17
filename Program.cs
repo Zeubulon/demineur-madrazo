@@ -10,72 +10,75 @@ namespace demineur_madrazo
     {
         static void Main(string[] args)
         {
-            //Affiche le titre
-            Title();
+            bool theEnd = false;
 
-            //Affiche les condition du tableau
-            Console.SetCursorPosition(3, 4);
-            Console.WriteLine("Merci d'entrer le nombre de ligne et de colonne de votre plateau de jeux");
-            Console.SetCursorPosition(3, 5);
-            Console.WriteLine("en sachant qu'au minimum on a un plateau de 6 lignes x 6 colonnes !");
-            Console.SetCursorPosition(3, 6);
-            Console.WriteLine("et au maximum un plateau de 30 lignes x 30 colonnes !");
-            Console.WriteLine("----------------------------------------------------------------------------");
-
-            //Récolte la taille du tableau voulu par l'utilisateur
-            Console.SetCursorPosition(0, 9);
-            int nRow = Numbers("ligne");
-            int nColumn = Numbers("colonne");
-
-            //Séléction de la dificulté
-            int difficulty = Difficulty();
-
-            //Changement de fenêtre pour la fenêtre de jeu
-            Console.Clear();
-            Title();
-
-            //Définition de la difficulté de jeu en string
-            string difficultyWord = DifficultyWord(difficulty);
-
-            //Calcul du Nombre de mine
-            int nbMine = MineCalcul(nRow, nColumn, difficulty);
-
-            //affichage des statistique de la partie
-            Console.Write("\nA vous de jouer !! Mode : ");
-            Console.ForegroundColor = ConsoleColor.DarkBlue;
-            Console.BackgroundColor = ConsoleColor.Yellow;
-            Console.WriteLine(difficultyWord);
-            Console.ResetColor();
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write(nbMine);
-            Console.ResetColor();
-            Console.WriteLine(" mines se cachent dans le jeu !");
-
-            //Affichage du tableau
-            int[,] grid = Grid(nRow, nColumn);
-            grid = GridBackend(grid, nRow, nColumn, nbMine);
-
-            Game(nRow, nColumn, grid, nbMine);
-
-            Console.WriteLine("\nSi vous voulez relancer une partie, appuyer sur la touch R");
-            ConsoleKeyInfo rematch = Console.ReadKey(true);
-            switch (rematch.Key)
+            while (!theEnd)
             {
-                case ConsoleKey.R:
-                    Console.Clear();
-                    Game()
-                    break;
-                case ConsoleKey.F9:
-                    Console.Clear();
-                    Console.SetCursorPosition(0, 0);
-                    Console.WriteLine("EasterEGG");
-                    break;
-                default:
-                    break;
+                //Affiche le titre
+                Title();
+
+                //Affiche les condition du tableau
+                Console.SetCursorPosition(3, 4);
+                Console.WriteLine("Merci d'entrer le nombre de ligne et de colonne de votre plateau de jeux");
+                Console.SetCursorPosition(3, 5);
+                Console.WriteLine("en sachant qu'au minimum on a un plateau de 6 lignes x 6 colonnes !");
+                Console.SetCursorPosition(3, 6);
+                Console.WriteLine("et au maximum un plateau de 30 lignes x 30 colonnes !");
+                Console.WriteLine("----------------------------------------------------------------------------");
+
+                //Récolte la taille du tableau voulu par l'utilisateur
+                Console.SetCursorPosition(0, 9);
+                int nRow = Numbers("ligne");
+                int nColumn = Numbers("colonne");
+
+                //Séléction de la dificulté
+                int difficulty = Difficulty();
+
+                //Changement de fenêtre pour la fenêtre de jeu
+                Console.Clear();
+                Title();
+
+                //Définition de la difficulté de jeu en string
+                string difficultyWord = DifficultyWord(difficulty);
+
+                //Calcul du Nombre de mine
+                int nbMine = MineCalcul(nRow, nColumn, difficulty);
+
+                //affichage des statistique de la partie
+                Console.Write("\nA vous de jouer !! Mode : ");
+                Console.ForegroundColor = ConsoleColor.DarkBlue;
+                Console.BackgroundColor = ConsoleColor.Yellow;
+                Console.WriteLine(difficultyWord);
+                Console.ResetColor();
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write(nbMine);
+                Console.ResetColor();
+                Console.WriteLine(" mines se cachent dans le jeu !");
+
+                //Affichage du tableau
+                int[,] grid = Grid(nRow, nColumn);
+                grid = GridBackend(grid, nRow, nColumn, nbMine);
+
+                Game(nRow, nColumn, grid, nbMine);
+
+                Console.WriteLine("\nSi vous voulez relancer une partie, appuyer sur la touch R");
+                ConsoleKeyInfo rematch = Console.ReadKey(true);
+                switch (rematch.Key)
+                {
+                    case ConsoleKey.R:
+                        Console.Clear();
+                        break;
+                    case ConsoleKey.F9:
+                        Console.Clear();
+                        Console.SetCursorPosition(0, 0);
+                        Console.WriteLine("EasterEGG");
+                        break;
+                    default:
+                        theEnd = true;
+                        break;
+                }
             }
-
-
-        Console.WriteLine("Finish");
+             Console.WriteLine("Finish");
 
         }
         /// <summary>
