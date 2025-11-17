@@ -11,7 +11,14 @@ namespace demineur_madrazo
         static void Main(string[] args)
         {
             bool theEnd = false;
+            int nRow = 0;
+            int nColumn = 0;
+            int difficulty = 0;
+            string difficultyWord = null;
+            int nbMine = 0;
+            int[,] grid = null;
 
+            //
             while (!theEnd)
             {
                 //Affiche le titre
@@ -28,21 +35,21 @@ namespace demineur_madrazo
 
                 //Récolte la taille du tableau voulu par l'utilisateur
                 Console.SetCursorPosition(0, 9);
-                int nRow = Numbers("ligne");
-                int nColumn = Numbers("colonne");
+                nRow = Numbers("ligne");
+                nColumn = Numbers("colonne");
 
                 //Séléction de la dificulté
-                int difficulty = Difficulty();
+                difficulty = Difficulty();
 
                 //Changement de fenêtre pour la fenêtre de jeu
                 Console.Clear();
                 Title();
 
                 //Définition de la difficulté de jeu en string
-                string difficultyWord = DifficultyWord(difficulty);
+                difficultyWord = DifficultyWord(difficulty);
 
                 //Calcul du Nombre de mine
-                int nbMine = MineCalcul(nRow, nColumn, difficulty);
+                nbMine = MineCalcul(nRow, nColumn, difficulty);
 
                 //affichage des statistique de la partie
                 Console.Write("\nA vous de jouer !! Mode : ");
@@ -56,27 +63,15 @@ namespace demineur_madrazo
                 Console.WriteLine(" mines se cachent dans le jeu !");
 
                 //Affichage du tableau
-                int[,] grid = Grid(nRow, nColumn);
+                grid = Grid(nRow, nColumn);
                 grid = GridBackend(grid, nRow, nColumn, nbMine);
 
                 Game(nRow, nColumn, grid, nbMine);
 
                 Console.WriteLine("\nSi vous voulez relancer une partie, appuyer sur la touch R");
                 ConsoleKeyInfo rematch = Console.ReadKey(true);
-                switch (rematch.Key)
-                {
-                    case ConsoleKey.R:
-                        Console.Clear();
-                        break;
-                    case ConsoleKey.F9:
-                        Console.Clear();
-                        Console.SetCursorPosition(0, 0);
-                        Console.WriteLine("EasterEGG");
-                        break;
-                    default:
-                        theEnd = true;
-                        break;
-                }
+                if (rematch.Key == ConsoleKey.R) Console.Clear();
+                else { theEnd = true; }
             }
              Console.WriteLine("Finish");
 
@@ -273,7 +268,6 @@ namespace demineur_madrazo
                 }
                 Console.Write("║");
             }
-            
         }
         static void Game(int nb1, int nb2, int[,] nb3, int nbMine)
         {
@@ -311,12 +305,17 @@ namespace demineur_madrazo
                         if (nb3[row, col] == 1)
                         {
                             Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("X");
+                            Console.Write("X");
                             Console.ResetColor();
                             remainingMine--;
                             nb3[row, col] = 4;
                             Console.SetCursorPosition(0, nb1 * 2 + 10);
-                            Console.WriteLine($"Il reste encore {remainingMine} mine(s) cachée(s)");
+                            Console.Write($"Il reste encore {remainingMine} mine(s) cachée(s)");
+                        }
+                        else if (nb3[row, col] == 5)
+                        {
+                            Console.Write(" ");
+                            nb3[row, col] = 0;
                         }
                         else
                         {
@@ -324,6 +323,14 @@ namespace demineur_madrazo
                             Console.WriteLine("O");
                             Console.ResetColor();
                             nb3[row, col] = 3;
+                        }
+                        break;
+
+                    case ConsoleKey.Spacebar:
+                        if (nb3[row, col] == 0)
+                        {
+                            Console.Write("F");
+                            nb3[row, col] = 5;
                         }
                         break;
 
