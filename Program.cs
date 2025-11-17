@@ -55,9 +55,27 @@ namespace demineur_madrazo
             int[,] grid = Grid(nRow, nColumn);
             grid = GridBackend(grid, nRow, nColumn, nbMine);
 
-            Game(nRow, nColumn, grid);
+            Game(nRow, nColumn, grid, nbMine);
 
-            Console.WriteLine("Finish");
+            Console.WriteLine("\nSi vous voulez relancer une partie, appuyer sur la touch R");
+            ConsoleKeyInfo rematch = Console.ReadKey(true);
+            switch (rematch.Key)
+            {
+                case ConsoleKey.R:
+                    Console.Clear();
+                    Game()
+                    break;
+                case ConsoleKey.F9:
+                    Console.Clear();
+                    Console.SetCursorPosition(0, 0);
+                    Console.WriteLine("EasterEGG");
+                    break;
+                default:
+                    break;
+            }
+
+
+        Console.WriteLine("Finish");
 
         }
         /// <summary>
@@ -254,32 +272,36 @@ namespace demineur_madrazo
             }
             
         }
-        static void Game(int nb1, int nb2, int[,] nb3)
+        static void Game(int nb1, int nb2, int[,] nb3, int nbMine)
         {
-            bool finish = false;
-            bool winOrNot = false;
+            bool isFinished = false;
+            bool isWon = false;
             int col = 0;
             int row = 0;
+            int remainingMine = nbMine;
 
-            while (!finish)
+            while (!isFinished)
             {
+                int mineCount = 0;
+                int emptyCount = 0;
+
                 ConsoleKeyInfo touch = Console.ReadKey(true);
                 switch (touch.Key)
                 {
                     case ConsoleKey.RightArrow:
-                        row ++;
+                        row++;
                         break;
 
                     case ConsoleKey.LeftArrow:
-                        row --;
+                        row--;
                         break;
 
                     case ConsoleKey.UpArrow:
-                        col --;
+                        col--;
                         break;
 
                     case ConsoleKey.DownArrow:
-                        col ++;
+                        col++;
                         break;
 
                     case ConsoleKey.Enter:
@@ -288,18 +310,53 @@ namespace demineur_madrazo
                             Console.ForegroundColor = ConsoleColor.Red;
                             Console.WriteLine("X");
                             Console.ResetColor();
+                            remainingMine--;
+                            nb3[row, col] = 4;
+                            Console.SetCursorPosition(0, nb1 * 2 + 10);
+                            Console.WriteLine($"Il reste encore {remainingMine} mine(s) cachée(s)");
                         }
                         else
                         {
                             Console.ForegroundColor = ConsoleColor.Green;
                             Console.WriteLine("O");
                             Console.ResetColor();
+                            nb3[row, col] = 3;
                         }
-                            break;
-
-                    case ConsoleKey.Escape:
-                        finish = true;
                         break;
+
+                    default:
+                        break;
+
+                }
+
+                for (int i = 0; i < nb3.GetLength(0); i++)
+                {
+                    for (int j = 0; j < nb3.GetLength(1); j++)
+                    {
+                        switch (nb3[i, j])
+                        {
+                            case 4:
+                                mineCount++;
+                                break;
+
+                            case 0:
+                                emptyCount++;
+                                break;
+
+                            default:
+                                break;
+                        }
+                    }
+                }
+
+                if (touch.Key == ConsoleKey.Escape || mineCount == nbMine)
+                {
+                    if (emptyCount == 0)
+                    {
+                        isWon = true;
+                    }
+
+                    isFinished = true;
                 }
 
                 if (col == nb2)
@@ -320,8 +377,18 @@ namespace demineur_madrazo
                 }
 
                 int marginLeft = 6 + 4 * row;
-                int marginTop = 9 + 2*col;
+                int marginTop = 9 + 2 * col;
                 Console.SetCursorPosition(marginLeft, marginTop);
+            }
+            Console.SetCursorPosition(0, nb1 * 2 + 12);
+            Console.WriteLine("C'est la fin !\n");
+            if (isWon)
+            {
+                Console.WriteLine("C'est Gagné !");
+            }
+            else
+            {
+                Console.WriteLine("C'est Perdu !");
             }
         }
         static int[,] GridBackend(int[,] grid, int nRow, int nColumn, int nbMine)
