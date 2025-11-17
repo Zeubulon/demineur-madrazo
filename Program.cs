@@ -267,19 +267,19 @@ namespace demineur_madrazo
                 switch (touch.Key)
                 {
                     case ConsoleKey.RightArrow:
-                        col ++;
+                        row ++;
                         break;
 
                     case ConsoleKey.LeftArrow:
-                        col --;
-                        break;
-
-                    case ConsoleKey.UpArrow:
                         row --;
                         break;
 
+                    case ConsoleKey.UpArrow:
+                        col --;
+                        break;
+
                     case ConsoleKey.DownArrow:
-                        row ++;
+                        col ++;
                         break;
 
                     case ConsoleKey.Enter:
@@ -319,8 +319,8 @@ namespace demineur_madrazo
                     row = nb1 - 1;
                 }
 
-                int marginLeft = 6 + 4 * col;
-                int marginTop = 9 + 2*row;
+                int marginLeft = 6 + 4 * row;
+                int marginTop = 9 + 2*col;
                 Console.SetCursorPosition(marginLeft, marginTop);
             }
         }
