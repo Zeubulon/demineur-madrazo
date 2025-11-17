@@ -1,8 +1,4 @@
-﻿﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace demineur_madrazo
 {
@@ -18,7 +14,7 @@ namespace demineur_madrazo
             int nbMine = 0;
             int[,] grid = null;
 
-            //
+            //Boucle de jeu
             while (!theEnd)
             {
                 //Affiche le titre
@@ -45,15 +41,16 @@ namespace demineur_madrazo
                 Console.Clear();
                 Title();
 
-                //Définition de la difficulté de jeu en string
-                difficultyWord = DifficultyWord(difficulty);
-
                 //Calcul du Nombre de mine
                 nbMine = MineCalcul(nRow, nColumn, difficulty);
 
                 //affichage des statistique de la partie
                 Console.Write("\nA vous de jouer !! Mode : ");
-                Console.ForegroundColor = ConsoleColor.DarkBlue;
+
+
+                //Définition de la difficulté de jeu en string (+Couleur du texte)
+                difficultyWord = DifficultyWord(difficulty);
+
                 Console.BackgroundColor = ConsoleColor.Yellow;
                 Console.WriteLine(difficultyWord);
                 Console.ResetColor();
@@ -66,14 +63,16 @@ namespace demineur_madrazo
                 grid = Grid(nRow, nColumn);
                 grid = GridBackend(grid, nRow, nColumn, nbMine);
 
+                //Clear de la console + Jeu devient jouable
                 Game(nRow, nColumn, grid, nbMine);
 
+                //Proposition de recommencer
                 Console.WriteLine("\nSi vous voulez relancer une partie, appuyer sur la touch R");
                 ConsoleKeyInfo rematch = Console.ReadKey(true);
                 if (rematch.Key == ConsoleKey.R) Console.Clear();
                 else { theEnd = true; }
             }
-             Console.WriteLine("Finish");
+            Console.WriteLine("Finish");
 
         }
         /// <summary>
@@ -100,7 +99,7 @@ namespace demineur_madrazo
             {
                 Console.Write($"Nombre de {w} : ");
                 valueOk = int.TryParse(Console.ReadLine(), out n);
-                if (n >= 1 && n <= 30)
+                if (n >= 6 && n <= 30)
                 {
                     rangeOk = true;
                 }
@@ -144,6 +143,11 @@ namespace demineur_madrazo
 
             return difficulty;
         }
+        /// <summary>
+        /// Définition de la difficulté de jeu en string (+Couleur du texte)
+        /// </summary>
+        /// <param name="d">Difficulté défini par l'utilisateur</param>
+        /// <returns></returns>
         static string DifficultyWord(int d)
         {
             string difficultyWord = "Undefined";
@@ -151,18 +155,28 @@ namespace demineur_madrazo
             if (d == 1)
             {
                 difficultyWord = "Facile";
+                Console.ForegroundColor = ConsoleColor.Green;
             }
             else if (d == 2)
             {
                 difficultyWord = "Moyen";
+                Console.ForegroundColor = ConsoleColor.DarkBlue;
             }
             else
             {
                 difficultyWord = "Difficile";
+                Console.ForegroundColor = ConsoleColor.Red;
             }
 
             return difficultyWord;
         }
+        /// <summary>
+        /// Calcul la quantité de mine à mettre dans le jeu
+        /// </summary>
+        /// <param name="nRow">Nombre de ligne</param>
+        /// <param name="nCol">Nombre de colonnes</param>
+        /// <param name="d">Difficulté défini par l'utilisateur</param>
+        /// <returns></returns>
         static int MineCalcul(int nRow, int nCol, int d)
         {
             double minePercent = 0;
@@ -187,6 +201,12 @@ namespace demineur_madrazo
 
             return nMine;
         }
+        /// <summary>
+        /// Affichage du tableau + création de la variable Tableau
+        /// </summary>
+        /// <param name="nRow">Nombre de lignes</param>
+        /// <param name="nColumn">Nombre de colonnes</param>
+        /// <returns></returns>
         static int[,] Grid(int nRow, int nColumn)
         {
             int marginTop = 8;
@@ -210,7 +230,7 @@ namespace demineur_madrazo
                 nColumn--;
             }
 
-            LineGrid(nRow, "╚", "╩", "╝",marginTop, marginLeft, false);
+            LineGrid(nRow, "╚", "╩", "╝", marginTop, marginLeft, false);
 
             marginTop = 8;
             marginLeft = marginLeft + (nRow * 3) + nRow + 2;
@@ -219,7 +239,7 @@ namespace demineur_madrazo
             Console.WriteLine("Consignes :");
             Console.CursorLeft = marginLeft;
             Console.WriteLine("-----------");
-            Console.CursorLeft = marginLeft+=3;
+            Console.CursorLeft = marginLeft += 3;
             Console.WriteLine("- Pour se déplacer dans le jeu utiliser les touches flèchées");
             Console.CursorLeft = marginLeft;
             Console.WriteLine("- Pour explorer une case la touche enter");
@@ -230,9 +250,9 @@ namespace demineur_madrazo
             Console.CursorLeft = marginLeft;
             Console.WriteLine("- Pour quitter la touche Esc\n");
 
-            Console.CursorLeft = marginLeft-=3;
+            Console.CursorLeft = marginLeft -= 3;
             Console.WriteLine("La partie est gagnée :");
-            Console.CursorLeft = marginLeft+=3;
+            Console.CursorLeft = marginLeft += 3;
             Console.WriteLine("- Une fois que toutes les cases ont été explorées");
             Console.CursorLeft = marginLeft;
             Console.WriteLine("- Que toutes les mines n'ont pas été explosées");
@@ -241,6 +261,16 @@ namespace demineur_madrazo
 
             return grid;
         }
+        /// <summary>
+        /// Aide à créer le tableau avec la fonction Grid
+        /// </summary>
+        /// <param name="nRow">Nombres de lignes</param>
+        /// <param name="c1">Caractère à gauche</param>
+        /// <param name="c2">Caractères du milieu</param>
+        /// <param name="c3">Caractères toutes à droite</param>
+        /// <param name="marginTop">Marge depuis le haut</param>
+        /// <param name="marginLeft">Marge depuis la gauche</param>
+        /// <param name="t">Indiqué si c'est la dernière ligne ou pas</param>
         static void LineGrid(int nRow, string c1, string c2, string c3, int marginTop, int marginLeft, bool t)
         {
             int n = nRow;
@@ -250,7 +280,7 @@ namespace demineur_madrazo
             while (n > 1)
             {
                 Console.Write($"{c2}═══");
-                n --;
+                n--;
             }
             Console.WriteLine(c3);
             if (t)
@@ -269,6 +299,13 @@ namespace demineur_madrazo
                 Console.Write("║");
             }
         }
+        /// <summary>
+        /// Clear de la console + Jeu devient jouable
+        /// </summary>
+        /// <param name="nb1">Nombres de lignes</param>
+        /// <param name="nb2">Nombre de colonnes</param>
+        /// <param name="nb3">Tableau des mines</param>
+        /// <param name="nbMine">Nombre de mines</param>
         static void Game(int nb1, int nb2, int[,] nb3, int nbMine)
         {
             bool isFinished = false;
@@ -342,7 +379,7 @@ namespace demineur_madrazo
                             Console.ResetColor();
                             nb3[row, col] = 6;
                         }
-                            break;
+                        break;
 
                     default:
                         break;
@@ -415,6 +452,14 @@ namespace demineur_madrazo
                 Console.WriteLine("C'est Perdu !");
             }
         }
+        /// <summary>
+        /// Rajoute les mines dans la variable tableau
+        /// </summary>
+        /// <param name="grid">La variable tableau</param>
+        /// <param name="nRow">Nombre de lignes</param>
+        /// <param name="nColumn">Nombres de colonnes</param>
+        /// <param name="nbMine">Nombre de mines</param>
+        /// <returns></returns>
         static int[,] GridBackend(int[,] grid, int nRow, int nColumn, int nbMine)
         {
             int mineRow;
