@@ -7,10 +7,10 @@ namespace demineur_madrazo
         static void Main(string[] args)
         {
             bool theEnd = false;
+            string difficultyWord = null;
             int nRow = 0;
             int nColumn = 0;
             int difficulty = 0;
-            string difficultyWord = null;
             int nbMine = 0;
             int[,] grid = null;
 
@@ -26,16 +26,15 @@ namespace demineur_madrazo
                 Console.SetCursorPosition(3, 5);
                 Console.WriteLine("en sachant qu'au minimum on a un plateau de 6 lignes x 6 colonnes !");
                 Console.SetCursorPosition(3, 6);
-                Console.WriteLine("et au maximum un plateau de 30 lignes x 30 colonnes !");
-                Console.WriteLine("----------------------------------------------------------------------------");
+                Console.WriteLine("et au maximum un plateau de 30 lignes x 30 colonnes !\n----------------------------------------------------------------------------");
 
                 //Récolte la taille du tableau voulu par l'utilisateur
                 Console.SetCursorPosition(0, 9);
-                nRow = Numbers("ligne");
-                nColumn = Numbers("colonne");
+                nRow = Numbers("Nombre de ligne : ", 6, 30);
+                nColumn = Numbers("Nombre de colonne : ", 6, 30);
 
                 //Séléction de la dificulté
-                difficulty = Difficulty();
+                difficulty = Numbers("Votre difficulté : ", 1, 3);
 
                 //Changement de fenêtre pour la fenêtre de jeu
                 Console.Clear();
@@ -60,8 +59,7 @@ namespace demineur_madrazo
                 Console.WriteLine(" mines se cachent dans le jeu !");
 
                 //Affichage du tableau
-                grid = Grid(nRow, nColumn);
-                grid = GridBackend(grid, nRow, nColumn, nbMine);
+                grid = Grid(nRow, nColumn, nbMine);
 
                 //Clear de la console + Jeu devient jouable
                 Game(nRow, nColumn, grid, nbMine);
@@ -80,16 +78,16 @@ namespace demineur_madrazo
         /// </summary>
         static void Title()
         {
-            Console.WriteLine("╔═══════════════════════════════════════════════════════════════════════════╗");
-            Console.WriteLine("║                  Démineur simplifié (Esteban Madrazo)                     ║");
-            Console.WriteLine("╚═══════════════════════════════════════════════════════════════════════════╝");
+            Console.WriteLine("╔═══════════════════════════════════════════════════════════════════════════╗\n" +
+                              "║                  Démineur simplifié (Esteban Madrazo)                     ║\n" +
+                              "╚═══════════════════════════════════════════════════════════════════════════╝");
         }
         /// <summary>
         /// Vérifie que les nombres donné par l'utilisateur son belle est bien des nombres et se situe entre 6 et 30.
         /// </summary>
-        /// <param name="w">Mot dans la phrase : Nombre de ...</param>
+        /// <param name="w">Question à poser (exemple : Votre difficulté, Nombre de ligne, etc.)</param>
         /// <returns></returns>
-        static int Numbers(string w)
+        static int Numbers(string w, int min, int max)
         {
             bool valueOk = false;
             bool rangeOk = false;
@@ -97,51 +95,20 @@ namespace demineur_madrazo
 
             while (valueOk != true && rangeOk != true)
             {
-                Console.Write($"Nombre de {w} : ");
+                Console.Write(w);
                 valueOk = int.TryParse(Console.ReadLine(), out n);
-                if (n >= 6 && n <= 30)
+                if (n >= min && n <= max)
                 {
                     rangeOk = true;
                 }
                 else
                 {
-                    Console.WriteLine("Votre valeur dois être un nombre qui se situe entre 6 et 30 ! Veuillez ressayer.");
+                    Console.WriteLine($"Votre valeur dois être un nombre qui se situe entre {min} et {max} ! Veuillez ressayer.");
                     valueOk = false;
                 }
             }
             return n;
 
-        }
-        /// <summary>
-        /// Vérifie que les nombres donné par l'utilisateur son belle est bien des nombres et se situe entre 1 et 3.
-        /// </summary>
-        /// <returns></returns>
-        static int Difficulty()
-        {
-            int difficulty = 0;
-            bool valueOk = false;
-            bool rangeOk = false;
-
-            Console.WriteLine("\n\tMerci d'entrer la difficulté pour votre jeu\n\ten sachant que :" +
-                "\n\t\t1 -- > niveau facile\n\t\t2 --> niveau moyen\n\t\t3 --> niveau difficile");
-            Console.WriteLine("----------------------------------------------------------------------------");
-
-            while (valueOk != true && rangeOk != true)
-            {
-                Console.Write("Votre difficulté : ");
-                valueOk = int.TryParse(Console.ReadLine(), out difficulty);
-                if (difficulty >= 1 && difficulty <= 3)
-                {
-                    rangeOk = true;
-                }
-                else
-                {
-                    Console.WriteLine("Votre valeur dois être un nombre qui se situe entre 1 et 3 ! Veuillez ressayer.");
-                    valueOk = false;
-                }
-            }
-
-            return difficulty;
         }
         /// <summary>
         /// Définition de la difficulté de jeu en string (+Couleur du texte)
@@ -150,7 +117,7 @@ namespace demineur_madrazo
         /// <returns></returns>
         static string DifficultyWord(int d)
         {
-            string difficultyWord = "Undefined";
+            string difficultyWord = null;
 
             if (d == 1)
             {
@@ -180,6 +147,9 @@ namespace demineur_madrazo
         static int MineCalcul(int nRow, int nCol, int d)
         {
             double minePercent = 0;
+            double surface = 0;
+            double doubleMine;
+            int nMine;
 
             if (d == 1)
             {
@@ -194,10 +164,9 @@ namespace demineur_madrazo
                 minePercent = 0.40;
             }
 
-            double surface = (nRow / 2 + 1) * (nCol / 2 + 1);
-
-            double doubleMine = surface * minePercent;
-            int nMine = (int)doubleMine;
+            surface = (nRow / 2 + 1) * (nCol / 2 + 1);
+            doubleMine = surface * minePercent;
+            nMine = (int)doubleMine;
 
             return nMine;
         }
@@ -206,12 +175,15 @@ namespace demineur_madrazo
         /// </summary>
         /// <param name="nRow">Nombre de lignes</param>
         /// <param name="nColumn">Nombre de colonnes</param>
+        /// <param name="nbMine">Nombre de mines</param>
         /// <returns></returns>
-        static int[,] Grid(int nRow, int nColumn)
+        static int[,] Grid(int nRow, int nColumn, int nbMine)
         {
             int marginTop = 8;
             int marginLeft = 4;
             int n = nRow;
+            int mineRow;
+            int mineCol;
 
             int[,] grid = new int[nRow, nColumn];
 
@@ -258,6 +230,25 @@ namespace demineur_madrazo
             Console.WriteLine("- Que toutes les mines n'ont pas été explosées");
 
             Console.SetCursorPosition(6, 9);
+
+            Random mRandom = new Random();
+
+            while (nbMine > 0)
+            {
+                mineRow = mRandom.Next(nRow);
+                mineCol = mRandom.Next(nColumn);
+
+                while (grid[mineRow, mineCol] == 1)
+                {
+                    mineRow = mRandom.Next(nRow);
+                    mineCol = mRandom.Next(nColumn);
+                }
+
+                grid[mineRow, mineCol] = 1;
+
+                nbMine--;
+            }
+            return grid;
 
             return grid;
         }
@@ -313,11 +304,15 @@ namespace demineur_madrazo
             int col = 0;
             int row = 0;
             int remainingMine = nbMine;
+            int mineCount = 0;
+            int emptyCount = 0;
+            int marginLeft = 0;
+            int marginTop = 0;
 
             while (!isFinished)
             {
-                int mineCount = 0;
-                int emptyCount = 0;
+                mineCount = 0;
+                emptyCount = 0;
 
                 ConsoleKeyInfo touch = Console.ReadKey(true);
                 switch (touch.Key)
@@ -437,8 +432,8 @@ namespace demineur_madrazo
                     row = nb1 - 1;
                 }
 
-                int marginLeft = 6 + 4 * row;
-                int marginTop = 9 + 2 * col;
+                marginLeft = 6 + 4 * row;
+                marginTop = 9 + 2 * col;
                 Console.SetCursorPosition(marginLeft, marginTop);
             }
             Console.SetCursorPosition(0, nb1 * 2 + 12);
@@ -451,38 +446,6 @@ namespace demineur_madrazo
             {
                 Console.WriteLine("C'est Perdu !");
             }
-        }
-        /// <summary>
-        /// Rajoute les mines dans la variable tableau
-        /// </summary>
-        /// <param name="grid">La variable tableau</param>
-        /// <param name="nRow">Nombre de lignes</param>
-        /// <param name="nColumn">Nombres de colonnes</param>
-        /// <param name="nbMine">Nombre de mines</param>
-        /// <returns></returns>
-        static int[,] GridBackend(int[,] grid, int nRow, int nColumn, int nbMine)
-        {
-            int mineRow;
-            int mineCol;
-
-            Random mRandom = new Random();
-
-            while (nbMine > 0)
-            {
-                mineRow = mRandom.Next(nRow);
-                mineCol = mRandom.Next(nColumn);
-
-                while (grid[mineRow, mineCol] == 1)
-                {
-                    mineRow = mRandom.Next(nRow);
-                    mineCol = mRandom.Next(nColumn);
-                }
-
-                grid[mineRow, mineCol] = 1;
-
-                nbMine--;
-            }
-            return grid;
         }
     }
 }
