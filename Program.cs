@@ -183,29 +183,29 @@ namespace demineur_madrazo
         {
             int marginTop = 8;
             int marginLeft = 4;
-            int n = nRow;
+            int n = nColumn;
 
             int[,] grid = new int[nRow, nColumn];
 
-            LineGrid(nRow, "╔", "╦", "╗", marginTop, marginLeft, true);
+            LineGrid(nColumn, "╔", "╦", "╗", marginTop, marginLeft, true);
 
             marginTop += 2;
-            while (nColumn > 1)
+            while (nRow > 1)
             {
                 while (n > 1)
                 {
-                    LineGrid(nRow, "╠", "╬", "╣", marginTop, marginLeft, true);
+                    LineGrid(nColumn, "╠", "╬", "╣", marginTop, marginLeft, true);
                     n--;
                 }
                 n = nRow;
                 marginTop += 2;
-                nColumn--;
+                nRow--;
             }
 
-            LineGrid(nRow, "╚", "╩", "╝", marginTop, marginLeft, false);
+            LineGrid(nColumn, "╚", "╩", "╝", marginTop, marginLeft, false);
 
             marginTop = 8;
-            marginLeft = marginLeft + (nRow * 3) + nRow + 2;
+            marginLeft = marginLeft + (nColumn * 3) + nColumn + 2;
 
             Console.SetCursorPosition(marginLeft, marginTop);
             Console.WriteLine("Consignes :");
@@ -243,9 +243,9 @@ namespace demineur_madrazo
         /// <param name="marginTop">Marge depuis le haut</param>
         /// <param name="marginLeft">Marge depuis la gauche</param>
         /// <param name="t">Indiqué si c'est la dernière ligne ou pas</param>
-        static void LineGrid(int nRow, string c1, string c2, string c3, int marginTop, int marginLeft, bool t)
+        static void LineGrid(int nColumn, string c1, string c2, string c3, int marginTop, int marginLeft, bool t)
         {
-            int n = nRow;
+            int n = nColumn;
 
             Console.SetCursorPosition(marginLeft, marginTop);
             Console.Write($"{c1}═══");
@@ -257,7 +257,7 @@ namespace demineur_madrazo
             Console.WriteLine(c3);
             if (t)
             {
-                n = nRow;
+                n = nColumn;
                 marginTop++;
 
                 Console.SetCursorPosition(marginLeft, marginTop);
@@ -331,19 +331,19 @@ namespace demineur_madrazo
                 switch (touch.Key)
                 {
                     case ConsoleKey.RightArrow:
-                        row++;
+                        col++;
                         break;
 
                     case ConsoleKey.LeftArrow:
-                        row--;
-                        break;
-
-                    case ConsoleKey.UpArrow:
                         col--;
                         break;
 
+                    case ConsoleKey.UpArrow:
+                        row--;
+                        break;
+
                     case ConsoleKey.DownArrow:
-                        col++;
+                        row++;
                         break;
 
                     case ConsoleKey.Enter:
@@ -375,18 +375,8 @@ namespace demineur_madrazo
                         break;
 
                     case ConsoleKey.Spacebar:
-                        if (nb3[row, col] == 0)
-                        {
                             Console.Write("F");
                             nb3[row, col] = 5;
-                        }
-                        else if (nb3[row, col] == 1)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.Write("F");
-                            Console.ResetColor();
-                            nb3[row, col] = 6;
-                        }
                         break;
 
                     default:
@@ -445,8 +435,8 @@ namespace demineur_madrazo
                     row = nb1 - 1;
                 }
 
-                marginLeft = 6 + 4 * row;
-                marginTop = 9 + 2 * col;
+                marginLeft = 6 + 4 * col;
+                marginTop = 9 + 2 * row;
                 Console.SetCursorPosition(marginLeft, marginTop);
             }
             Console.SetCursorPosition(0, nb1 * 2 + 12);
