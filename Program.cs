@@ -38,6 +38,7 @@ namespace demineur_madrazo
 
                 //Changement de fenêtre pour la fenêtre de jeu
                 Console.Clear();
+                Console.SetWindowSize(nColumn * 3 + nColumn + 2 + 80, 17 + 2 * nRow + 1);
                 Title();
 
                 //Calcul du Nombre de mine
