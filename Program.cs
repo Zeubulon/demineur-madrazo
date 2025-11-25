@@ -59,7 +59,10 @@ namespace demineur_madrazo
                 Console.WriteLine(" mines se cachent dans le jeu !");
 
                 //Affichage du tableau
-                grid = Grid(nRow, nColumn, nbMine);
+                grid = Grid(nRow, nColumn);
+
+                //Création du tableau en arrière plan
+                grid = GridBackend(grid, nRow, nColumn, nbMine);
 
                 //Clear de la console + Jeu devient jouable
                 Game(nRow, nColumn, grid, nbMine);
@@ -175,15 +178,12 @@ namespace demineur_madrazo
         /// </summary>
         /// <param name="nRow">Nombre de lignes</param>
         /// <param name="nColumn">Nombre de colonnes</param>
-        /// <param name="nbMine">Nombre de mines</param>
         /// <returns></returns>
-        static int[,] Grid(int nRow, int nColumn, int nbMine)
+        static int[,] Grid(int nRow, int nColumn)
         {
             int marginTop = 8;
             int marginLeft = 4;
             int n = nRow;
-            int mineRow;
-            int mineCol;
 
             int[,] grid = new int[nRow, nColumn];
 
@@ -231,25 +231,6 @@ namespace demineur_madrazo
 
             Console.SetCursorPosition(6, 9);
 
-            Random mRandom = new Random();
-
-            while (nbMine > 0)
-            {
-                mineRow = mRandom.Next(nRow);
-                mineCol = mRandom.Next(nColumn);
-
-                while (grid[mineRow, mineCol] == 1)
-                {
-                    mineRow = mRandom.Next(nRow);
-                    mineCol = mRandom.Next(nColumn);
-                }
-
-                grid[mineRow, mineCol] = 1;
-
-                nbMine--;
-            }
-            return grid;
-
             return grid;
         }
         /// <summary>
@@ -289,6 +270,38 @@ namespace demineur_madrazo
                 }
                 Console.Write("║");
             }
+        }
+        /// <summary>
+        /// Rajoute les mines dans la variable tableau
+        /// </summary>
+        /// <param name="grid">La variable tableau</param>
+        /// <param name="nRow">Nombre de lignes</param>
+        /// <param name="nColumn">Nombres de colonnes</param>
+        /// <param name="nbMine">Nombre de mines</param>
+        /// <returns></returns>
+        static int[,] GridBackend(int[,] grid, int nRow, int nColumn, int nbMine)
+        {
+            int mineRow;
+            int mineCol;
+
+            Random mRandom = new Random();
+
+            while (nbMine > 0)
+            {
+                mineRow = mRandom.Next(nRow);
+                mineCol = mRandom.Next(nColumn);
+
+                while (grid[mineRow, mineCol] == 1)
+                {
+                    mineRow = mRandom.Next(nRow);
+                    mineCol = mRandom.Next(nColumn);
+                }
+
+                grid[mineRow, mineCol] = 1;
+
+                nbMine--;
+            }
+            return grid;
         }
         /// <summary>
         /// Clear de la console + Jeu devient jouable
