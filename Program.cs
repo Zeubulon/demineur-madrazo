@@ -4,15 +4,34 @@ namespace demineur_madrazo
 {
     internal class Program
     {
+        enum CaseType
+        {
+            Empty,
+            Mine,
+            Clean,
+            DiggedMine,
+            Flag,
+            Test
+        }
+
         static void Main(string[] args)
         {
+            const int MinRow = 6;
+            const int MaxRow = 30;
+            const int MinCol = 6;
+            const int MaxCol = 30;
+            const int MinD = 1;
+            const int MaxD = 3;
+
             bool theEnd = false;
             string difficultyWord = null;
             int nRow = 0;
+            int height = 0;
             int nColumn = 0;
             int difficulty = 0;
             int nbMine = 0;
-            int[,] grid = null;
+            CaseType[,] grid = null;
+
 
             //Boucle de jeu
             while (!theEnd)
@@ -30,15 +49,18 @@ namespace demineur_madrazo
 
                 //Récolte la taille du tableau voulu par l'utilisateur
                 Console.SetCursorPosition(0, 9);
-                nRow = Numbers("Nombre de ligne : ", 6, 30);
-                nColumn = Numbers("Nombre de colonne : ", 6, 30);
+                nRow = Numbers("Nombre de ligne : ", MinRow, MaxRow);
+                nColumn = Numbers("Nombre de colonne : ", MinCol, MaxCol);
 
                 //Séléction de la dificulté
-                difficulty = Numbers("Votre difficulté : ", 1, 3);
+                difficulty = Numbers("Votre difficulté : ", MinD, MaxD);
 
                 //Changement de fenêtre pour la fenêtre de jeu
                 Console.Clear();
-                Console.SetWindowSize(nColumn * 3 + nColumn + 2 + 80, 17 + 2 * nRow + 1);
+                height = 17 + 2 * nRow + 1;
+                if (height > 63)
+                    height = 63;
+                Console.SetWindowSize(nColumn * 3 + nColumn + 2 + 80, height);
                 Title();
 
                 //Calcul du Nombre de mine
@@ -60,10 +82,10 @@ namespace demineur_madrazo
                 Console.WriteLine(" mines se cachent dans le jeu !");
 
                 //Affichage du tableau
-                grid = Grid(nRow, nColumn);
+                Grid(nRow, nColumn);
 
                 //Création du tableau en arrière plan
-                grid = GridBackend(grid, nRow, nColumn, nbMine);
+                grid = GridBackend(nRow, nColumn, nbMine);
 
                 //Clear de la console + Jeu devient jouable
                 Game(nRow, nColumn, grid, nbMine);
@@ -180,13 +202,11 @@ namespace demineur_madrazo
         /// <param name="nRow">Nombre de lignes</param>
         /// <param name="nColumn">Nombre de colonnes</param>
         /// <returns></returns>
-        static int[,] Grid(int nRow, int nColumn)
+        static void Grid(int nRow, int nColumn)
         {
             int marginTop = 8;
             int marginLeft = 4;
             int n = nColumn;
-
-            int[,] grid = new int[nRow, nColumn];
 
             LineGrid(nColumn, "╔", "╦", "╗", marginTop, marginLeft, true);
 
@@ -231,8 +251,6 @@ namespace demineur_madrazo
             Console.WriteLine("- Que toutes les mines n'ont pas été explosées");
 
             Console.SetCursorPosition(6, 9);
-
-            return grid;
         }
         /// <summary>
         /// Aide à créer le tableau avec la fonction Grid
@@ -280,10 +298,11 @@ namespace demineur_madrazo
         /// <param name="nColumn">Nombres de colonnes</param>
         /// <param name="nbMine">Nombre de mines</param>
         /// <returns></returns>
-        static int[,] GridBackend(int[,] grid, int nRow, int nColumn, int nbMine)
+        static CaseType[,] GridBackend( int nRow, int nColumn, int nbMine)
         {
             int mineRow;
             int mineCol;
+            CaseType[,] grid = new CaseType[nRow, nColumn];
 
             Random mRandom = new Random();
 
@@ -292,13 +311,13 @@ namespace demineur_madrazo
                 mineRow = mRandom.Next(nRow);
                 mineCol = mRandom.Next(nColumn);
 
-                while (grid[mineRow, mineCol] == 1)
+                while (grid[mineRow, mineCol] == CaseType.Mine)
                 {
                     mineRow = mRandom.Next(nRow);
                     mineCol = mRandom.Next(nColumn);
                 }
 
-                grid[mineRow, mineCol] = 1;
+                grid[mineRow, mineCol] = CaseType.Mine;
 
                 nbMine--;
             }
@@ -311,7 +330,7 @@ namespace demineur_madrazo
         /// <param name="nb2">Nombre de colonnes</param>
         /// <param name="nb3">Tableau des mines</param>
         /// <param name="nbMine">Nombre de mines</param>
-        static void Game(int nb1, int nb2, int[,] nb3, int nbMine)
+        static void Game(int nb1, int nb2, CaseType[,] nb3, int nbMine)
         {
             bool isFinished = false;
             bool isWon = false;
@@ -348,36 +367,36 @@ namespace demineur_madrazo
                         break;
 
                     case ConsoleKey.Enter:
-                        if (nb3[row, col] == 1)
+                        if (nb3[row, col] == CaseType.Mine)
                         {
                             Console.ForegroundColor = ConsoleColor.Red;
                             Console.Write("X");
                             Console.ResetColor();
                             remainingMine--;
-                            nb3[row, col] = 4;
+                            nb3[row, col] = CaseType.DiggedMine;
                             Console.SetCursorPosition(0, nb1 * 2 + 10);
                             Console.Write($"Il reste encore {remainingMine} mine(s) cachée(s)");
                         }
-                        else if (nb3[row, col] == 5 || nb3[row, col] == 6)
+                        else if (nb3[row, col] == CaseType.Flag || nb3[row, col] == CaseType.Test)
                         {
                             Console.Write(" ");
-                            if (nb3[row, col] == 5)
-                                nb3[row, col] = 0;
+                            if (nb3[row, col] == CaseType.Flag)
+                                nb3[row, col] = CaseType.Empty;
                             else
-                                nb3[row, col] = 1;
+                                nb3[row, col] = CaseType.Mine;
                         }
                         else
                         {
                             Console.ForegroundColor = ConsoleColor.Green;
                             Console.WriteLine("O");
                             Console.ResetColor();
-                            nb3[row, col] = 3;
+                            nb3[row, col] = CaseType.Clean;
                         }
                         break;
 
                     case ConsoleKey.Spacebar:
                             Console.Write("F");
-                            nb3[row, col] = 5;
+                            nb3[row, col] = CaseType.Flag;
                         break;
 
                     default:
@@ -391,15 +410,15 @@ namespace demineur_madrazo
                     {
                         switch (nb3[i, j])
                         {
-                            case 4:
+                            case CaseType.DiggedMine:
                                 mineCount++;
                                 break;
 
-                            case 0:
+                            case CaseType.Empty:
                                 emptyCount++;
                                 break;
 
-                            case 5:
+                            case CaseType.Flag:
                                 emptyCount++;
                                 break;
 
