@@ -10,8 +10,7 @@ namespace demineur_madrazo
             Mine,
             Clean,
             DiggedMine,
-            Flag,
-            Test
+            Flag
         }
 
         static void Main(string[] args)
@@ -23,13 +22,22 @@ namespace demineur_madrazo
             const int MinD = 1;
             const int MaxD = 3;
 
+            bool isFinished = false;
             bool theEnd = false;
+            bool isWon = false;
             string difficultyWord = null;
             int nRow = 0;
             int height = 0;
             int nColumn = 0;
             int difficulty = 0;
             int nbMine = 0;
+            int col = 0;
+            int row = 0;
+            int remainingMine = 0;
+            int mineCount = 0;
+            int emptyCount = 0;
+            int marginLeft = 0;
+            int marginTop = 0;
             CaseType[,] grid = null;
 
 
@@ -64,7 +72,7 @@ namespace demineur_madrazo
                 Title();
 
                 //Calcul du Nombre de mine
-                nbMine = MineCalcul(nRow, nColumn, difficulty);
+                nbMine = MineCalcul(nRow, nColumn, difficulty, ref remainingMine);
 
                 //affichage des statistique de la partie
                 Console.Write("\nA vous de jouer !! Mode : ");
@@ -84,11 +92,109 @@ namespace demineur_madrazo
                 //Affichage du tableau
                 Grid(nRow, nColumn);
 
-                //Création du tableau en arrière plan
+                //Création de la variable tableau
                 grid = GridBackend(nRow, nColumn, nbMine);
 
                 //Clear de la console + Jeu devient jouable
-                Game(nRow, nColumn, grid, nbMine);
+
+                while (!isFinished)
+                {
+                    mineCount = 0;
+                    emptyCount = 0;
+
+                    ConsoleKeyInfo touch = Console.ReadKey(true);
+                    switch (touch.Key)
+                    {
+                        case ConsoleKey.RightArrow:
+                            col++;
+                            if (col == nColumn)
+                                col = 0;
+                            break;
+
+                        case ConsoleKey.LeftArrow:
+                            col--;
+                            if (col < 0)
+                                col = nColumn - 1;
+                            break;
+
+                        case ConsoleKey.UpArrow:
+                            row--;
+                            if (row < 0)
+                                row = nRow - 1;
+                            break;
+
+                        case ConsoleKey.DownArrow:
+                            row++;
+                            if (row == nRow)
+                                row = 0;
+                            break;
+
+                        case ConsoleKey.Enter:
+                            if (grid[row, col] == CaseType.Mine)
+                            {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.Write("X");
+                                Console.ResetColor();
+                                remainingMine--;
+                                grid[row, col] = CaseType.DiggedMine;
+                                Console.SetCursorPosition(0, nRow * 2 + 10);
+                                Console.Write($"Il reste encore {remainingMine} mine(s) cachée(s)");
+                            }
+                            else if (grid[row, col] == CaseType.Flag)
+                            {
+                                Console.Write(" ");
+                                if (grid[row, col] == CaseType.Flag)
+                                    grid[row, col] = CaseType.Empty;
+                                else
+                                    grid[row, col] = CaseType.Mine;
+                            }
+                            else if (grid[col, row] == CaseType.Empty)
+                            {
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.WriteLine("O");
+                                Console.ResetColor();
+                                grid[row, col] = CaseType.Clean;
+                            }
+                            break;
+
+                        case ConsoleKey.Spacebar:
+                            if (grid[row, col] == CaseType.Empty)
+                            {
+                                Console.Write("F");
+                                grid[row, col] = CaseType.Flag;
+                            }
+                            break;
+
+                        default:
+                            break;
+
+                    }
+
+                    UpdateCounter(grid, ref mineCount, ref emptyCount);
+
+                    if (touch.Key == ConsoleKey.Escape || emptyCount == 0 || remainingMine == 0)
+                    {
+                        if (mineCount != nbMine)
+                        {
+                            isWon = true;
+                        }
+
+                        isFinished = true;
+                    }
+                    marginLeft = 6 + 4 * col;
+                    marginTop = 9 + 2 * row;
+                    Console.SetCursorPosition(marginLeft, marginTop);
+                }
+                Console.SetCursorPosition(0, nRow * 2 + 12);
+                Console.WriteLine("C'est la fin !\n");
+                if (isWon)
+                {
+                    Console.WriteLine("C'est Gagné !");
+                }
+                else
+                {
+                    Console.WriteLine("C'est Perdu !");
+                }
 
                 //Proposition de recommencer
                 Console.WriteLine("\nSi vous voulez relancer une partie, appuyer sur la touch R");
@@ -102,17 +208,21 @@ namespace demineur_madrazo
         /// <summary>
         /// Affiche le titre
         /// </summary>
+        
         static void Title()
         {
             Console.WriteLine("╔═══════════════════════════════════════════════════════════════════════════╗\n" +
                               "║                  Démineur simplifié (Esteban Madrazo)                     ║\n" +
                               "╚═══════════════════════════════════════════════════════════════════════════╝");
-        }
+
+        } // Title
+
         /// <summary>
         /// Vérifie que les nombres donné par l'utilisateur son belle est bien des nombres et se situe entre 6 et 30.
         /// </summary>
         /// <param name="w">Question à poser (exemple : Votre difficulté, Nombre de ligne, etc.)</param>
         /// <returns></returns>
+        
         static int Numbers(string w, int min, int max)
         {
             bool valueOk = false;
@@ -135,12 +245,14 @@ namespace demineur_madrazo
             }
             return n;
 
-        }
+        } // Numbers
+
         /// <summary>
         /// Définition de la difficulté de jeu en string (+Couleur du texte)
         /// </summary>
         /// <param name="d">Difficulté défini par l'utilisateur</param>
         /// <returns></returns>
+
         static string DifficultyWord(int d)
         {
             string difficultyWord = null;
@@ -162,7 +274,9 @@ namespace demineur_madrazo
             }
 
             return difficultyWord;
-        }
+
+        } // DifficultyWord
+
         /// <summary>
         /// Calcul la quantité de mine à mettre dans le jeu
         /// </summary>
@@ -170,7 +284,8 @@ namespace demineur_madrazo
         /// <param name="nCol">Nombre de colonnes</param>
         /// <param name="d">Difficulté défini par l'utilisateur</param>
         /// <returns></returns>
-        static int MineCalcul(int nRow, int nCol, int d)
+
+        static int MineCalcul(int nRow, int nCol, int d, ref int remainingMine)
         {
             double minePercent = 0;
             double surface = 0;
@@ -194,14 +309,19 @@ namespace demineur_madrazo
             doubleMine = surface * minePercent;
             nMine = (int)doubleMine;
 
+            remainingMine = nMine;
+
             return nMine;
-        }
+
+        } // MineCalcul
+
         /// <summary>
         /// Affichage du tableau + création de la variable Tableau
         /// </summary>
         /// <param name="nRow">Nombre de lignes</param>
         /// <param name="nColumn">Nombre de colonnes</param>
         /// <returns></returns>
+
         static void Grid(int nRow, int nColumn)
         {
             int marginTop = 8;
@@ -251,7 +371,9 @@ namespace demineur_madrazo
             Console.WriteLine("- Que toutes les mines n'ont pas été explosées");
 
             Console.SetCursorPosition(6, 9);
-        }
+
+        } // Grid
+
         /// <summary>
         /// Aide à créer le tableau avec la fonction Grid
         /// </summary>
@@ -262,6 +384,7 @@ namespace demineur_madrazo
         /// <param name="marginTop">Marge depuis le haut</param>
         /// <param name="marginLeft">Marge depuis la gauche</param>
         /// <param name="t">Indiqué si c'est la dernière ligne ou pas</param>
+
         static void LineGrid(int nColumn, string c1, string c2, string c3, int marginTop, int marginLeft, bool t)
         {
             int n = nColumn;
@@ -288,8 +411,11 @@ namespace demineur_madrazo
                     n--;
                 }
                 Console.Write("║");
-            }
+
+            } // LineGrid
+
         }
+
         /// <summary>
         /// Rajoute les mines dans la variable tableau
         /// </summary>
@@ -298,6 +424,7 @@ namespace demineur_madrazo
         /// <param name="nColumn">Nombres de colonnes</param>
         /// <param name="nbMine">Nombre de mines</param>
         /// <returns></returns>
+
         static CaseType[,] GridBackend( int nRow, int nColumn, int nbMine)
         {
             int mineRow;
@@ -322,153 +449,35 @@ namespace demineur_madrazo
                 nbMine--;
             }
             return grid;
-        }
-        /// <summary>
-        /// Clear de la console + Jeu devient jouable
-        /// </summary>
-        /// <param name="nb1">Nombres de lignes</param>
-        /// <param name="nb2">Nombre de colonnes</param>
-        /// <param name="nb3">Tableau des mines</param>
-        /// <param name="nbMine">Nombre de mines</param>
-        static void Game(int nb1, int nb2, CaseType[,] nb3, int nbMine)
+
+        } //GridBackend
+
+        static void UpdateCounter(CaseType[,] nb3, ref int mineCount, ref int emptyCount)
         {
-            bool isFinished = false;
-            bool isWon = false;
-            int col = 0;
-            int row = 0;
-            int remainingMine = nbMine;
-            int mineCount = 0;
-            int emptyCount = 0;
-            int marginLeft = 0;
-            int marginTop = 0;
-
-            while (!isFinished)
+            for (int i = 0; i < nb3.GetLength(0); i++)
             {
-                mineCount = 0;
-                emptyCount = 0;
-
-                ConsoleKeyInfo touch = Console.ReadKey(true);
-                switch (touch.Key)
+                for (int j = 0; j < nb3.GetLength(1); j++)
                 {
-                    case ConsoleKey.RightArrow:
-                        col++;
-                        break;
-
-                    case ConsoleKey.LeftArrow:
-                        col--;
-                        break;
-
-                    case ConsoleKey.UpArrow:
-                        row--;
-                        break;
-
-                    case ConsoleKey.DownArrow:
-                        row++;
-                        break;
-
-                    case ConsoleKey.Enter:
-                        if (nb3[row, col] == CaseType.Mine)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.Write("X");
-                            Console.ResetColor();
-                            remainingMine--;
-                            nb3[row, col] = CaseType.DiggedMine;
-                            Console.SetCursorPosition(0, nb1 * 2 + 10);
-                            Console.Write($"Il reste encore {remainingMine} mine(s) cachée(s)");
-                        }
-                        else if (nb3[row, col] == CaseType.Flag || nb3[row, col] == CaseType.Test)
-                        {
-                            Console.Write(" ");
-                            if (nb3[row, col] == CaseType.Flag)
-                                nb3[row, col] = CaseType.Empty;
-                            else
-                                nb3[row, col] = CaseType.Mine;
-                        }
-                        else
-                        {
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine("O");
-                            Console.ResetColor();
-                            nb3[row, col] = CaseType.Clean;
-                        }
-                        break;
-
-                    case ConsoleKey.Spacebar:
-                            Console.Write("F");
-                            nb3[row, col] = CaseType.Flag;
-                        break;
-
-                    default:
-                        break;
-
-                }
-
-                for (int i = 0; i < nb3.GetLength(0); i++)
-                {
-                    for (int j = 0; j < nb3.GetLength(1); j++)
+                    switch (nb3[i, j])
                     {
-                        switch (nb3[i, j])
-                        {
-                            case CaseType.DiggedMine:
-                                mineCount++;
-                                break;
+                        case CaseType.DiggedMine:
+                            mineCount++;
+                            break;
 
-                            case CaseType.Empty:
-                                emptyCount++;
-                                break;
+                        case CaseType.Empty:
+                            emptyCount++;
+                            break;
 
-                            case CaseType.Flag:
-                                emptyCount++;
-                                break;
+                        case CaseType.Flag:
+                            emptyCount++;
+                            break;
 
-                            default:
-                                break;
-                        }
+                        default:
+                            break;
                     }
                 }
-
-                if (touch.Key == ConsoleKey.Escape || emptyCount == 0 || remainingMine == 0)
-                {
-                    if (mineCount != nbMine)
-                    {
-                        isWon = true;
-                    }
-
-                    isFinished = true;
-                }
-
-                if (col == nb2)
-                {
-                    col = 0;
-                }
-                else if (row == nb1)
-                {
-                    row = 0;
-                }
-                else if (col < 0)
-                {
-                    col = nb2 - 1;
-                }
-                else if (row < 0)
-                {
-                    row = nb1 - 1;
-                }
-
-                marginLeft = 6 + 4 * col;
-                marginTop = 9 + 2 * row;
-                Console.SetCursorPosition(marginLeft, marginTop);
             }
-            Console.SetCursorPosition(0, nb1 * 2 + 12);
-            Console.WriteLine("C'est la fin !\n");
-            if (isWon)
-            {
-                Console.WriteLine("C'est Gagné !");
-            }
-            else
-            {
-                Console.WriteLine("C'est Perdu !");
-            }
-        }
+
+        } // UpdateCounter
     }
 }
